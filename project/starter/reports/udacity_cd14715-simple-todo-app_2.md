@@ -4,54 +4,54 @@
 
 | Metric | Value |
 |--------|-------|
-| **Overall Score** | 35/100 |
+| **Overall Score** | 15/100 |
 | **Files Reviewed** | 1 |
 | **Critical Issues** | 3 |
-| **High Priority Tests** | 18 |
-| **Refactoring Opportunities** | 10 |
+| **High Priority Tests** | 10 |
+| **Refactoring Opportunities** | 5 |
 
 ## 🎯 Top Recommendations
 
-1. 🚨 **Security - SQL Injection**: IMMEDIATE ACTION REQUIRED: Fix SQL injection vulnerabilities in all three newly added search functions. Replace string concatenation and template literal SQL queries with parameterized queries using $1, $2 placeholders and passing user input as separate parameters to db.query().
+1. 🚨 **Security - SQL Injection**: IMMEDIATE ACTION REQUIRED: Replace all SQL string concatenation and interpolation with parameterized queries in the three new functions (searchTodos, searchTodosByStatus, getTodosByUser). These functions are highly exploitable and allow attackers to bypass authentication, access unauthorized data, modify/delete data, or execute arbitrary database commands.
    - Files: src/todo.ts
 
-2. 🚨 **Type Safety**: Fix incorrect parameter type in searchTodosByStatus function. The 'completed' parameter should be boolean, not string. Update function signature to: searchTodosByStatus(completed: boolean): Promise<Todo[]>
+2. 🚨 **Type Safety**: Change searchTodosByStatus parameter type from 'string' to 'boolean' to prevent type confusion and simplify the SQL injection vulnerability. The current string type makes it easier for attackers to inject malicious SQL.
    - Files: src/todo.ts
 
-3. 🚨 **Test Coverage**: Create comprehensive test suite for src/todo.ts with at least 45 test cases. Priority: SQL injection tests demonstrating vulnerabilities in searchTodos, searchTodosByStatus, and getTodosByUser; XSS prevention tests for sanitizeInput; validation edge cases; and parameterized query verification for existing secure functions.
+3. 🚨 **Test Coverage**: Create comprehensive test suite (tests/todo.test.ts) with priority focus on testing the three vulnerable functions to demonstrate SQL injection flaws and verify fixes. Zero test coverage exists for the entire file.
    - Files: src/todo.ts
 
-4. ⚠️ **Security - Input Validation**: Add input validation for all search functions. Validate keyword length, userId format, and ensure completed parameter is properly typed as boolean before executing queries.
+4. ⚠️ **Authorization**: Add authorization checks to getTodosByUser function to verify that the requesting user has permission to access the requested userId's todos. Current implementation could allow horizontal privilege escalation.
    - Files: src/todo.ts
 
-5. ⚠️ **Architecture**: Implement Repository or QueryBuilder pattern to centralize database query logic, enforce parameterized queries consistently, and improve testability. This will prevent future SQL injection vulnerabilities.
+5. ⚠️ **Input Validation**: Add input validation for all user-provided parameters (keyword, userId, id) in the new search functions. Validate presence, type, length limits, and format to prevent invalid data from reaching database layer and potential DoS attacks.
    - Files: src/todo.ts
 
 ## 📁 File Details
 
 ### 📄 `src/todo.ts`
 
-**Quality Score:** 35/100 | **Coverage:** ~0%
+**Quality Score:** 15/100 | **Coverage:** ~0%
 
-#### Issues (16)
-  - Line 120: `critical` SQL Injection vulnerability in searchTodos function. User input 'keyword' is directly interpolated into SQL query using template literals without any sanitization or parameterization.
-  - Line 130: `critical` SQL Injection vulnerability in searchTodosByStatus function. User input 'completed' is concatenated directly into SQL query without validation or parameterization. An attacker could inject arbitrary SQL code.
-  - Line 140: `critical` SQL Injection vulnerability in getTodosByUser function. User input 'userId' is directly embedded in SQL query using template literals without sanitization or parameterization.
-
-  *...and 13 more*
-
-#### Test Gaps (35)
-  - `searchTodos (lines 116-121)` (critical priority)
-  - `searchTodosByStatus (lines 126-131)` (critical priority)
-
-  *...and 33 more*
-
-#### Refactoring Opportunities (10)
-  - **pattern-improvement**: Extract SQL query building logic into a QueryBuilder pattern to prevent SQL injection vulnerabilities and eliminate code duplication across all query functions
-  - **modernize**: Use parameterized queries with proper type conversion instead of string concatenation/interpolation
+#### Issues (11)
+  - Line 121: `critical` SQL Injection vulnerability: User input 'keyword' is directly interpolated into SQL query using template literals without any sanitization or parameterization. An attacker could inject malicious SQL like `' OR '1'='1' --` to access unauthorized data or `'; DROP TABLE todos; --` to destroy data.
+  - Line 131: `critical` SQL Injection vulnerability: User input 'completed' is directly concatenated into SQL query without validation or parameterization. An attacker could inject `1 OR 1=1` to bypass the WHERE clause or use more sophisticated attacks to extract sensitive data.
+  - Line 142: `critical` SQL Injection vulnerability: User input 'userId' is directly interpolated into SQL query using template literals. An attacker could inject `' OR '1'='1` to access all todos across all users, completely bypassing authorization, or use UNION attacks to extract data from other tables.
 
   *...and 8 more*
 
+#### Test Gaps (10)
+  - `searchTodos(keyword: string): Promise<Todo[]> [lines 119-124]` (critical priority)
+  - `searchTodos(keyword: string): Promise<Todo[]> [lines 119-124]` (critical priority)
+
+  *...and 8 more*
+
+#### Refactoring Opportunities (5)
+  - **pattern-improvement**: Apply parameterized queries pattern consistently to prevent SQL injection and improve consistency with existing secure functions
+  - **extract-function**: Extract validation rules into smaller, composable validator functions
+
+  *...and 3 more*
+
 ---
 
-*Generated at 2026-11-20T00:00:00.000Z • Duration: 371186ms*
+*Generated at 2026-11-20T00:00:00.000Z • Duration: 298764ms*

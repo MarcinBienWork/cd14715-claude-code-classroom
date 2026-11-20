@@ -101,8 +101,7 @@ export class CodeReviewOrchestrator {
           'mcp__eslint'
         ],
         maxTurns: this.maxTurns,
-        permissionMode: 'bypassPermissions',
-        allowDangerouslySkipPermissions: true,
+        permissionMode: 'dontAsk',
         outputFormat: { type: 'json_schema', schema: ReviewReportJSONSchema }
       }
     });

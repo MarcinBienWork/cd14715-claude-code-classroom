@@ -47,7 +47,7 @@
   
   <div class="summary">
     <div class="metric">
-      <div class="metric-value">35</div>
+      <div class="metric-value">15</div>
       <div class="metric-label">Overall Score</div>
     </div>
     <div class="metric">
@@ -59,11 +59,11 @@
       <div class="metric-label">Critical Issues</div>
     </div>
     <div class="metric">
-      <div class="metric-value">18</div>
+      <div class="metric-value">10</div>
       <div class="metric-label">Tests Needed</div>
     </div>
     <div class="metric">
-      <div class="metric-value">10</div>
+      <div class="metric-value">5</div>
       <div class="metric-label">Refactorings</div>
     </div>
   </div>
@@ -72,37 +72,37 @@
   <ul>
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>Security - SQL Injection</strong>: IMMEDIATE ACTION REQUIRED: Fix SQL injection vulnerabilities in all three newly added search functions. Replace string concatenation and template literal SQL queries with parameterized queries using $1, $2 placeholders and passing user input as separate parameters to db.query().
+        <strong>Security - SQL Injection</strong>: IMMEDIATE ACTION REQUIRED: Replace all SQL string concatenation and interpolation with parameterized queries in the three new functions (searchTodos, searchTodosByStatus, getTodosByUser). These functions are highly exploitable and allow attackers to bypass authentication, access unauthorized data, modify/delete data, or execute arbitrary database commands.
         <br><small>Files: src/todo.ts</small>
       </li>
     
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>Type Safety</strong>: Fix incorrect parameter type in searchTodosByStatus function. The 'completed' parameter should be boolean, not string. Update function signature to: searchTodosByStatus(completed: boolean): Promise<Todo[]>
+        <strong>Type Safety</strong>: Change searchTodosByStatus parameter type from 'string' to 'boolean' to prevent type confusion and simplify the SQL injection vulnerability. The current string type makes it easier for attackers to inject malicious SQL.
         <br><small>Files: src/todo.ts</small>
       </li>
     
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>Test Coverage</strong>: Create comprehensive test suite for src/todo.ts with at least 45 test cases. Priority: SQL injection tests demonstrating vulnerabilities in searchTodos, searchTodosByStatus, and getTodosByUser; XSS prevention tests for sanitizeInput; validation edge cases; and parameterized query verification for existing secure functions.
+        <strong>Test Coverage</strong>: Create comprehensive test suite (tests/todo.test.ts) with priority focus on testing the three vulnerable functions to demonstrate SQL injection flaws and verify fixes. Zero test coverage exists for the entire file.
         <br><small>Files: src/todo.ts</small>
       </li>
     
       <li class="rec-high">
         <span class="priority">[HIGH]</span>
-        <strong>Security - Input Validation</strong>: Add input validation for all search functions. Validate keyword length, userId format, and ensure completed parameter is properly typed as boolean before executing queries.
+        <strong>Authorization</strong>: Add authorization checks to getTodosByUser function to verify that the requesting user has permission to access the requested userId's todos. Current implementation could allow horizontal privilege escalation.
         <br><small>Files: src/todo.ts</small>
       </li>
     
       <li class="rec-high">
         <span class="priority">[HIGH]</span>
-        <strong>Architecture</strong>: Implement Repository or QueryBuilder pattern to centralize database query logic, enforce parameterized queries consistently, and improve testability. This will prevent future SQL injection vulnerabilities.
+        <strong>Input Validation</strong>: Add input validation for all user-provided parameters (keyword, userId, id) in the new search functions. Validate presence, type, length limits, and format to prevent invalid data from reaching database layer and potential DoS attacks.
         <br><small>Files: src/todo.ts</small>
       </li>
     </ul>
 
   <footer>
-    Generated at 2026-11-20T00:00:00.000Z • Duration: 371186ms
+    Generated at 2026-11-20T00:00:00.000Z • Duration: 298764ms
   </footer>
 </body>
 </html>

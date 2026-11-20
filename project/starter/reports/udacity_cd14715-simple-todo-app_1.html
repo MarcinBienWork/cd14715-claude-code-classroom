@@ -59,11 +59,11 @@
       <div class="metric-label">Critical Issues</div>
     </div>
     <div class="metric">
-      <div class="metric-value">14</div>
+      <div class="metric-value">13</div>
       <div class="metric-label">Tests Needed</div>
     </div>
     <div class="metric">
-      <div class="metric-value">6</div>
+      <div class="metric-value">10</div>
       <div class="metric-label">Refactorings</div>
     </div>
   </div>
@@ -72,37 +72,37 @@
   <ul>
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>Testing</strong>: Add comprehensive test coverage for security-critical functions. The file has 0% test coverage with 16 untested paths. Priority should be given to testing email validation (isValidEmail), XSS sanitization (sanitizeInput), and the main business logic (createUser) including all error branches.
+        <strong>Testing</strong>: Add comprehensive test coverage for security-critical functions. The file has 0% test coverage with no test files found. Create fixtures/clean-code.test.ts with 20+ test cases covering isValidEmail, sanitizeInput, createUser, generateId, and saveUser functions.
         <br><small>Files: fixtures/clean-code.ts</small>
       </li>
     
       <li class="rec-high">
         <span class="priority">[HIGH]</span>
-        <strong>Security</strong>: Replace weak ID generation (Math.random() + timestamp) with crypto.randomUUID() to prevent enumeration attacks and ID collisions in high-concurrency scenarios. Current implementation is predictable and exploitable.
+        <strong>Security</strong>: Replace Math.random() with crypto.randomUUID() for ID generation. Current implementation is not cryptographically secure and may produce collisions at scale, potentially causing database constraint violations or security issues.
         <br><small>Files: fixtures/clean-code.ts</small>
       </li>
     
       <li class="rec-high">
         <span class="priority">[HIGH]</span>
-        <strong>Security</strong>: Enhance XSS sanitization to include all dangerous characters (ampersand, forward slash) and consider using a proven library like DOMPurify instead of manual encoding. Current implementation is incomplete.
+        <strong>Security</strong>: Enhance email validation with a more robust regex or use a well-tested library like 'validator.js'. Current regex is overly permissive and may accept invalid emails (e.g., 'test@domain' without proper TLD validation).
         <br><small>Files: fixtures/clean-code.ts</small>
       </li>
     
       <li class="rec-high">
         <span class="priority">[HIGH]</span>
-        <strong>Security</strong>: Improve email validation regex to reject invalid formats (missing TLD, multiple @ symbols, etc.) or use a dedicated validation library like validator.js. Current regex is overly permissive.
+        <strong>Security</strong>: Improve XSS sanitization by using a comprehensive library like DOMPurify or implementing complete HTML entity encoding. Current implementation only handles basic cases and misses ampersand encoding, potentially leaving XSS vulnerabilities.
         <br><small>Files: fixtures/clean-code.ts</small>
       </li>
     
-      <li class="rec-medium">
-        <span class="priority">[MEDIUM]</span>
-        <strong>Code Quality</strong>: Extract validation logic into separate functions (validateCreateUserInput, buildUser) to improve separation of concerns, testability, and maintainability. This follows the Single Responsibility Principle.
+      <li class="rec-high">
+        <span class="priority">[HIGH]</span>
+        <strong>Bug Prevention</strong>: Implement actual database connection with proper error handling. The database query is currently commented out, making the code non-functional. Add try-catch blocks, connection pooling, and transaction support.
         <br><small>Files: fixtures/clean-code.ts</small>
       </li>
     </ul>
 
   <footer>
-    Generated at 2026-11-20T00:00:00.000Z • Duration: 253381ms
+    Generated at 2026-11-20T00:00:00.000Z • Duration: 287906ms
   </footer>
 </body>
 </html>

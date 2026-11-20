@@ -7,24 +7,24 @@
 | **Overall Score** | 78/100 |
 | **Files Reviewed** | 1 |
 | **Critical Issues** | 0 |
-| **High Priority Tests** | 14 |
-| **Refactoring Opportunities** | 6 |
+| **High Priority Tests** | 13 |
+| **Refactoring Opportunities** | 10 |
 
 ## 🎯 Top Recommendations
 
-1. 🚨 **Testing**: Add comprehensive test coverage for security-critical functions. The file has 0% test coverage with 16 untested paths. Priority should be given to testing email validation (isValidEmail), XSS sanitization (sanitizeInput), and the main business logic (createUser) including all error branches.
+1. 🚨 **Testing**: Add comprehensive test coverage for security-critical functions. The file has 0% test coverage with no test files found. Create fixtures/clean-code.test.ts with 20+ test cases covering isValidEmail, sanitizeInput, createUser, generateId, and saveUser functions.
    - Files: fixtures/clean-code.ts
 
-2. ⚠️ **Security**: Replace weak ID generation (Math.random() + timestamp) with crypto.randomUUID() to prevent enumeration attacks and ID collisions in high-concurrency scenarios. Current implementation is predictable and exploitable.
+2. ⚠️ **Security**: Replace Math.random() with crypto.randomUUID() for ID generation. Current implementation is not cryptographically secure and may produce collisions at scale, potentially causing database constraint violations or security issues.
    - Files: fixtures/clean-code.ts
 
-3. ⚠️ **Security**: Enhance XSS sanitization to include all dangerous characters (ampersand, forward slash) and consider using a proven library like DOMPurify instead of manual encoding. Current implementation is incomplete.
+3. ⚠️ **Security**: Enhance email validation with a more robust regex or use a well-tested library like 'validator.js'. Current regex is overly permissive and may accept invalid emails (e.g., 'test@domain' without proper TLD validation).
    - Files: fixtures/clean-code.ts
 
-4. ⚠️ **Security**: Improve email validation regex to reject invalid formats (missing TLD, multiple @ symbols, etc.) or use a dedicated validation library like validator.js. Current regex is overly permissive.
+4. ⚠️ **Security**: Improve XSS sanitization by using a comprehensive library like DOMPurify or implementing complete HTML entity encoding. Current implementation only handles basic cases and misses ampersand encoding, potentially leaving XSS vulnerabilities.
    - Files: fixtures/clean-code.ts
 
-5. 📝 **Code Quality**: Extract validation logic into separate functions (validateCreateUserInput, buildUser) to improve separation of concerns, testability, and maintainability. This follows the Single Responsibility Principle.
+5. ⚠️ **Bug Prevention**: Implement actual database connection with proper error handling. The database query is currently commented out, making the code non-functional. Add try-catch blocks, connection pooling, and transaction support.
    - Files: fixtures/clean-code.ts
 
 ## 📁 File Details
@@ -33,25 +33,25 @@
 
 **Quality Score:** 78/100 | **Coverage:** ~0%
 
-#### Issues (10)
-  - Line 32: `medium` Email regex is overly permissive and allows invalid email formats (e.g., 'user@domain' without TLD, multiple @ symbols in local part)
-  - Line 39: `medium` HTML entity encoding is incomplete for XSS prevention. Missing encoding for other dangerous characters like forward slash (/) which can break out of some contexts
-  - Line 39: `low` Sanitization function doesn't handle null/undefined inputs, which could cause runtime errors
+#### Issues (12)
+  - Line 32: `medium` Email regex validation is overly permissive and may accept invalid email addresses (e.g., 'test@domain' without proper TLD validation)
+  - Line 40: `medium` HTML entity encoding is incomplete for comprehensive XSS prevention. Missing encoding for other special characters and doesn't handle all attack vectors
+  - Line 46: `low` Missing JSDoc documentation for return type and parameters
 
-  *...and 7 more*
+  *...and 9 more*
 
 #### Test Gaps (16)
   - `isValidEmail (line 29)` (critical priority)
-  - `isValidEmail (line 29)` (high priority)
+  - `isValidEmail - empty and null inputs (line 29)` (high priority)
 
   *...and 14 more*
 
-#### Refactoring Opportunities (6)
-  - **modernize**: Use a configuration object or Map for HTML entity replacements to make the code more maintainable and extensible
-  - **pattern-improvement**: Use UUID library or crypto.randomUUID() for more robust unique ID generation instead of timestamp + random
+#### Refactoring Opportunities (10)
+  - **pattern-improvement**: Replace manual HTML entity encoding with a lookup map for better maintainability and extensibility
+  - **modernize**: Use crypto.randomUUID() or modern cryptographic random generation instead of Math.random() for better uniqueness guarantees
 
-  *...and 4 more*
+  *...and 8 more*
 
 ---
 
-*Generated at 2026-11-20T00:00:00.000Z • Duration: 253381ms*
+*Generated at 2026-11-20T00:00:00.000Z • Duration: 287906ms*
