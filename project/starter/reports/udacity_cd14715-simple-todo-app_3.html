@@ -47,7 +47,7 @@
   
   <div class="summary">
     <div class="metric">
-      <div class="metric-value">15</div>
+      <div class="metric-value">25</div>
       <div class="metric-label">Overall Score</div>
     </div>
     <div class="metric">
@@ -59,7 +59,7 @@
       <div class="metric-label">Critical Issues</div>
     </div>
     <div class="metric">
-      <div class="metric-value">25</div>
+      <div class="metric-value">18</div>
       <div class="metric-label">Tests Needed</div>
     </div>
     <div class="metric">
@@ -72,37 +72,37 @@
   <ul>
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>Security & Compliance</strong>: IMMEDIATE: Remove all PCI-DSS violations by eliminating raw credit card data handling (cardNumber, CVV). Integrate with a PCI-compliant payment processor (Stripe, PayPal, Square) that provides tokenization. Never handle sensitive card data in application code - use payment tokens only.
+        <strong>Security - PCI-DSS Compliance</strong>: Replace raw payment card handling with PCI-compliant payment processor tokenization (Stripe, PayPal, or similar). The current implementation stores and processes unencrypted card numbers and CVV, creating severe compliance violations and legal liability. This is a blocking issue that must be resolved before production deployment.
         <br><small>Files: src/premium.ts</small>
       </li>
     
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>Payment Processing</strong>: Replace simulated payment processing with actual payment gateway integration. The current chargeCard function only inserts database records without charging cards, allowing free subscriptions. Integrate real payment API (e.g., Stripe charges API) before production deployment.
+        <strong>Security - Authentication & Authorization</strong>: Add authentication and authorization checks to all functions. Currently, any user can process payments for other users, access any user's subscription data, or check feature access without verification. Implement user context validation in processPremiumPayment, hasFeatureAccess, and getUserSubscription functions.
         <br><small>Files: src/premium.ts</small>
       </li>
     
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>Data Integrity</strong>: Implement database transactions for payment processing. Currently, if chargeCard succeeds but upgradeUserSubscription fails, users are charged without receiving their subscription. Wrap the entire payment flow in a transaction with proper rollback handling.
+        <strong>Testing - Zero Test Coverage</strong>: Create comprehensive test suite for all payment and subscription logic. With 0% test coverage on critical financial code, there's extreme risk of bugs causing financial losses, fraudulent charges, or unauthorized access. Prioritize tests for payment processing, card validation, pricing calculations, and feature access control. Create src/premium.test.ts with mocked database dependencies.
         <br><small>Files: src/premium.ts</small>
       </li>
     
       <li class="rec-critical">
         <span class="priority">[CRITICAL]</span>
-        <strong>Payment Safety</strong>: Add idempotency protection to prevent duplicate charges on network retries or accidental double-clicks. Implement idempotency keys and check for existing payments before processing new ones.
+        <strong>Data Integrity - Transaction Handling</strong>: Implement database transactions for payment operations. Currently, payment charging and subscription upgrade are separate operations without transaction boundaries, risking scenarios where customers are charged but don't receive their subscription (or vice versa). Wrap all payment processing in BEGIN/COMMIT/ROLLBACK blocks.
         <br><small>Files: src/premium.ts</small>
       </li>
     
-      <li class="rec-critical">
-        <span class="priority">[CRITICAL]</span>
-        <strong>Test Coverage</strong>: Add comprehensive test coverage for all payment and subscription functions. Currently 0% test coverage on critical business logic. Priority: processPremiumPayment, validatePaymentDetails, calculateSubscriptionPrice, chargeCard, upgradeUserSubscription, hasFeatureAccess, and getUserSubscription with all edge cases.
+      <li class="rec-high">
+        <span class="priority">[HIGH]</span>
+        <strong>Security - Payment Idempotency</strong>: Add idempotency protection to prevent double-charging customers. Network failures or retries could cause the same payment to be processed multiple times. Implement idempotency keys that are checked before processing payments.
         <br><small>Files: src/premium.ts</small>
       </li>
     </ul>
 
   <footer>
-    Generated at 2026-11-20T00:00:00.000Z • Duration: 418338ms
+    Generated at 2026-11-20T00:00:00.000Z • Duration: 411700ms
   </footer>
 </body>
 </html>
